@@ -1,0 +1,102 @@
+---
+import Base from '../layouts/Base.astro';
+import PluginCard from '../components/PluginCard.astro';
+import { plugins, repository } from '../data/plugins';
+
+const packageCount = plugins.reduce((sum, p) => sum + p.packages.length, 0);
+---
+
+<Base>
+  <section class="hero">
+    <div class="container">
+      <p class="eyebrow">🧪 Proberaum<sup>*</sup> for Backstage</p>
+      <h1>A rehearsal room for new Backstage plugins.</h1>
+      <p class="lead">
+        Early-stage plugins for <a href="https://backstage.io">Backstage</a>, incubated here before some of them move on to the
+        Backstage Community Plugins. Some are already stable enough for production – feedback and contributions are welcome.
+      </p>
+      <div class="actions">
+        <a class="button primary" href="#plugins">Browse {plugins.length} plugins</a>
+        <a class="button" href={repository.url}>View on GitHub</a>
+      </div>
+      <p class="footnote muted"><sup>*</sup> German for rehearsal room</p>
+    </div>
+  </section>
+
+  <section id="plugins" class="container">
+    <div class="section-head">
+      <h2>Plugins</h2>
+      <p class="muted">{plugins.length} plugins · {packageCount} packages</p>
+    </div>
+    <div class="grid">
+      {plugins.map(plugin => <PluginCard plugin={plugin} />)}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding: 4rem 0 3rem;
+    background:
+      radial-gradient(ellipse 60% 80% at 85% 0%, var(--accent-soft), transparent 70%),
+      transparent;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.75rem;
+    font-weight: 600;
+    color: var(--accent-text);
+  }
+
+  h1 {
+    margin: 0;
+    max-width: 18ch;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+
+  .lead {
+    max-width: 62ch;
+    margin: 1.25rem 0 0;
+    font-size: 1.125rem;
+    color: var(--text-muted);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+
+  .footnote {
+    margin: 1.5rem 0 0;
+    font-size: 0.8125rem;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0 1.25rem;
+  }
+
+  .section-head h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .section-head p {
+    margin: 0;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 1.25rem;
+  }
+</style>

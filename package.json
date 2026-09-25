@@ -1,0 +1,20 @@
+{
+  "name": "proberaum-github-io",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "sync": "node scripts/sync-plugins.mjs",
+    "dev": "npm run sync && astro dev",
+    "build": "npm run sync && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^7.3.5",
+    "astro-expressive-code": "^0.44.2"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

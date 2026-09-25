@@ -1,0 +1,68 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  # Rebuild daily to pick up changes from proberaum/backstage-plugins …
+  schedule:
+    - cron: '17 4 * * *'
+  # … or immediately, when the plugins repo sends a repository_dispatch event.
+  repository_dispatch:
+    types: [backstage-plugins-updated]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout website
+        uses: actions/checkout@v5
+
+      - name: Checkout proberaum/backstage-plugins
+        uses: actions/checkout@v5
+        with:
+          repository: proberaum/backstage-plugins
+          path: .cache/backstage-plugins
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (extracts docs, READMEs and screenshots, then runs astro build)
+        run: npm run build
+        env:
+          BACKSTAGE_PLUGINS_DIR: .cache/backstage-plugins
+
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

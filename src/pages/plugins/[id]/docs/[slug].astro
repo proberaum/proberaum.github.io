@@ -1,0 +1,130 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Base from '../../../../layouts/Base.astro';
+import PluginSidebar from '../../../../components/PluginSidebar.astro';
+import { plugins, githubUrl, type Plugin } from '../../../../data/plugins';
+
+export const getStaticPaths = (async () => {
+  const docs = await getCollection('docs', entry => entry.data.kind === 'doc');
+  return docs.flatMap(entry => {
+    const plugin = plugins.find(p => p.id === entry.data.workspace);
+    if (!plugin) return [];
+    const siblings = docs
+      .filter(d => d.data.workspace === plugin.id)
+      .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+    return [{ params: { id: plugin.id, slug: entry.data.slug! }, props: { plugin, entry, siblings } }];
+  });
+}) satisfies GetStaticPaths;
+
+interface Props {
+  plugin: Plugin;
+  entry: CollectionEntry<'docs'>;
+  siblings: CollectionEntry<'docs'>[];
+}
+
+const { plugin, entry, siblings } = Astro.props;
+const { Content } = await render(entry);
+const index = siblings.findIndex(s => s.id === entry.id);
+const prev = siblings[index - 1];
+const next = siblings[index + 1];
+const docLink = (doc: CollectionEntry<'docs'>) => `/plugins/${plugin.id}/docs/${doc.data.slug}/`;
+---
+
+<Base title={`${entry.data.title} – ${plugin.title}`} description={plugin.description}>
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/#plugins">Plugins</a>
+      <span aria-hidden="true">/</span>
+      <a href={`/plugins/${plugin.id}/`}>{plugin.title}</a>
+      <span aria-hidden="true">/</span>
+      <span>{entry.data.title}</span>
+    </nav>
+
+    <div class="layout">
+      <article>
+        <h1>{entry.data.title}</h1>
+        <div class="prose">
+          <Content />
+        </div>
+
+        <footer class="doc-footer">
+          <a class="edit" href={githubUrl(entry.data.source, 'blob')}>View this page on GitHub</a>
+          <nav class="pager">
+            {prev ? <a href={docLink(prev)}>← {prev.data.title}</a> : <span />}
+            {next && <a href={docLink(next)}>{next.data.title} →</a>}
+          </nav>
+        </footer>
+      </article>
+
+      <PluginSidebar
+        plugin={plugin}
+        docs={siblings.map(d => ({ slug: d.data.slug!, title: d.data.title }))}
+        currentDoc={entry.data.slug}
+      />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1.5rem 0 1rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  .breadcrumbs a {
+    color: var(--text-muted);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+
+  @media (min-width: 960px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 260px;
+    }
+  }
+
+  article {
+    min-width: 0;
+    max-width: 76ch;
+  }
+
+  h1 {
+    margin: 0 0 1.5rem;
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+
+  .doc-footer {
+    margin-top: 3rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9375rem;
+  }
+
+  .edit {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.25rem;
+  }
+
+  .pager a {
+    font-weight: 600;
+    text-decoration: none;
+  }
+</style>

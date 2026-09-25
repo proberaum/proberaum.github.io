@@ -1,0 +1,113 @@
+---
+import { STATUS_LABEL, type Plugin } from '../data/plugins';
+
+interface Props {
+  plugin: Plugin;
+}
+
+const { plugin } = Astro.props;
+const shot = plugin.screenshots[0];
+const packageCount = plugin.packages.length;
+---
+
+<a class="card" href={`/plugins/${plugin.id}/`}>
+  <div class:list={['card-media', { empty: !shot }]}>
+    {shot ? <img src={shot.src} alt="" loading="lazy" /> : <span class="card-emoji" aria-hidden="true">{plugin.emoji}</span>}
+  </div>
+  <div class="card-body">
+    <div class="card-top">
+      <h3>
+        {shot && <span aria-hidden="true">{plugin.emoji} </span>}
+        {plugin.title}
+      </h3>
+      <span class:list={['badge', `status-${plugin.status}`]}>{STATUS_LABEL[plugin.status]}</span>
+    </div>
+    <p>{plugin.description}</p>
+    <p class="card-meta">
+      {packageCount} {packageCount === 1 ? 'package' : 'packages'}
+      {plugin.packages.find(p => p.published) && <> · v{plugin.packages.find(p => p.published)!.version}</>}
+    </p>
+  </div>
+</a>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+    color: inherit;
+    text-decoration: none;
+    overflow: hidden;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s,
+      transform 0.15s;
+  }
+
+  .card:hover {
+    border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+  }
+
+  .card-media {
+    aspect-ratio: 16 / 9;
+    background: var(--bg-subtle);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top left;
+    display: block;
+  }
+
+  .card-media.empty {
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at 30% 20%, var(--accent-soft), transparent 60%),
+      var(--bg-subtle);
+  }
+
+  .card-emoji {
+    font-size: 3rem;
+  }
+
+  .card-body {
+    padding: 1rem 1.125rem 1.125rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.4;
+  }
+
+  p {
+    margin: 0.5rem 0 0;
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+  }
+
+  .card-meta {
+    margin-top: auto;
+    padding-top: 0.75rem;
+    font-size: 0.8125rem;
+  }
+</style>

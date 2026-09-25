@@ -1,0 +1,126 @@
+---
+import { githubUrl, npmUrl, repository, type Plugin } from '../data/plugins';
+
+interface Props {
+  plugin: Plugin;
+  docs: { slug: string; title: string }[];
+  currentDoc?: string;
+}
+
+const { plugin, docs, currentDoc } = Astro.props;
+const base = `/plugins/${plugin.id}/`;
+---
+
+<aside class="sidebar">
+  {
+    docs.length > 0 && (
+      <div class="block">
+        <h2>Documentation</h2>
+        <ul>
+          {docs.map(doc => (
+            <li>
+              <a href={`${base}docs/${doc.slug}/`} aria-current={doc.slug === currentDoc ? 'page' : undefined}>
+                {doc.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
+  <div class="block">
+    <h2>Packages</h2>
+    <ul>
+      {
+        plugin.packages.map(pkg => (
+          <li>
+            <a href={`${base}#pkg-${pkg.dir}`}>{pkg.dir}</a>
+            {pkg.published && (
+              <a class="ext" href={npmUrl(pkg.name)} title={`${pkg.name} on npm`}>
+                npm
+              </a>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2>Links</h2>
+    <ul>
+      <li><a href={githubUrl(plugin.path)}>Source on GitHub</a></li>
+      <li>
+        <a href={`${repository.url}/issues?q=is%3Aissue+is%3Aopen+${encodeURIComponent(plugin.id)}`}>Issues</a>
+      </li>
+    </ul>
+  </div>
+</aside>
+
+<style>
+  .sidebar {
+    font-size: 0.9375rem;
+  }
+
+  @media (min-width: 960px) {
+    .sidebar {
+      position: sticky;
+      top: 84px;
+      align-self: start;
+    }
+  }
+
+  .block + .block {
+    margin-top: 1.75rem;
+  }
+
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  li a:first-child {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    padding: 0.3rem 0.625rem;
+    margin-left: -0.625rem;
+    border-radius: 0.375rem;
+    color: var(--text);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+
+  li a:first-child:hover {
+    background: var(--bg-subtle);
+  }
+
+  li a[aria-current='page'] {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+
+  .ext {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+</style>
