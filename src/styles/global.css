@@ -5,9 +5,11 @@
   --text: #1d1c1a;
   --text-muted: #62605b;
   --border: #e4e1db;
-  --accent: #6b3fd4;
-  --accent-soft: #efe9fc;
-  --accent-text: #5a2fc2;
+  /* Backstage-like teal green (logo #36baa2, page header #005b4b) */
+  --accent: #13806b;
+  --accent-soft: #dff4ef;
+  --accent-glow: #c8efe5;
+  --accent-text: #0e6f5c;
   --inline-code-bg: #f0ede8;
   --shadow: 0 1px 2px rgb(20 18 14 / 0.04), 0 4px 16px rgb(20 18 14 / 0.06);
   --radius: 0.75rem;
@@ -36,9 +38,10 @@
     --text: #ecebf0;
     --text-muted: #a3a1ab;
     --border: #2e2e36;
-    --accent: #a98bff;
-    --accent-soft: #2a2340;
-    --accent-text: #bba3ff;
+    --accent: #36baa2;
+    --accent-soft: #13302a;
+    --accent-glow: #0f3a31;
+    --accent-text: #5fd4bd;
     --inline-code-bg: #26262d;
     --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px rgb(0 0 0 / 0.25);
     --status-stable: #6ad49b;
@@ -62,9 +65,10 @@
   --text: #ecebf0;
   --text-muted: #a3a1ab;
   --border: #2e2e36;
-  --accent: #a98bff;
-  --accent-soft: #2a2340;
-  --accent-text: #bba3ff;
+  --accent: #36baa2;
+  --accent-soft: #13302a;
+  --accent-glow: #0f3a31;
+  --accent-text: #5fd4bd;
   --inline-code-bg: #26262d;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px rgb(0 0 0 / 0.25);
   --status-stable: #6ad49b;
